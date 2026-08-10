@@ -1,33 +1,29 @@
 class Solution:
     def restoreIpAddresses(self, s: str) -> List[str]:
         ans = []
-        path = []
 
-        def backtrack(start):
+        def backtrack(start, parts):
             # If we have 4 parts
-            if len(path) == 4:
+            if len(parts) == 4:
                 if start == len(s):
-                    ans.append(".".join(path))
+                    ans.append(".".join(parts))
                 return
 
-            # Each IP part can have length 1, 2, or 3
-            for length in range(1, 4):
-                if start + length > len(s):
-                    break
+            # Each IP part can have at most 3 digits
+            for end in range(start + 1, min(start + 4, len(s) + 1)):
+                part = s[start:end]
 
-                part = s[start:start + length]
-
-                # Leading zero is invalid: "01", "00"
+                # Leading zero is not allowed: "01", "00"
                 if len(part) > 1 and part[0] == '0':
                     continue
 
-                # Must be <= 255
+                # Valid range
                 if int(part) > 255:
                     continue
 
-                path.append(part)
-                backtrack(start + length)
-                path.pop()
+                parts.append(part)
+                backtrack(end, parts)
+                parts.pop()
 
-        backtrack(0)
+        backtrack(0, [])
         return ans
